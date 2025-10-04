@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My To-Do List</title>
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0d1b2a; /* dark blue background */
+      color: #e0e0e0; /* light grey text for contrast */
+      padding: 20px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      background-color: #1b263b; /* card dark blue */
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    /* Welcome */
+    .welcome {
+      text-align: center;
+      font-size: 1.4rem;
+      margin-bottom: 25px;
+      color: #fca311; /* warm accent for attention */
+      font-weight: bold;
+    }
+
+    /* Heading */
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #e0e0e0;
+      font-weight: 600;
+    }
+
+    /* Form Styles */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: #334674;
+      color: #e0e0e0;
+      transition: background 0.3s;
+    }
+
+    input[type="text"]::placeholder {
+      color: #a0a0a0;
+    }
+
+    input[type="text"]:focus {
+      outline: 2px solid #fca311;
+      background-color: #263349;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      background: #fca311; /* highlight button */
+      color: #0d1b2a;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #ffba08;
+      transform: translateY(-2px);
+    }
+
+    /* Todo List Styles */
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    li {
+      background: #273a69;
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    li:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    }
+
+    .todo-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #f9f9f9;
+    }
+
+    .todo-description {
+      color: #a0a0a0;
+      margin-left: 10px;
+      font-size: 0.95rem;
+    }
+
+    .delete-btn {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-weight: bold;
+    }
+
+    .delete-btn:hover {
+      background: #d62828;
+    }
+
+    /* Responsive */
+    @media(max-width: 680px){
+      .container {
+        padding: 20px;
+      }
+      input[type="text"], button {
+        font-size: 0.95rem;
+      }
+      .todo-title {
+        font-size: 1rem;
+      }
+      .todo-description {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="welcome">
+      Welcome, <%= user?.fullname || "Guest" %>
+    </div>
+
+    <h1>My To-Do List</h1>
+
+    <form action="/add" method="post">
+      <input type="text" name="title" placeholder="Enter todo..." required>
+      <input type="text" name="description" placeholder="Enter todo description" required>
+      <input type="hidden" name="userId" value="<%= user.id %>">
+      <button type="submit">Add Todo</button>
+    </form>
+
+    <ul>
+      <% if (todos && todos.length > 0) { %>
+        <% todos.forEach(todo => { %>
+          <li>
+            <div>
+              <span class="todo-title"><%= todo.title %></span>
+              <span class="todo-description"><%= todo.description %></span>
+            </div>
+            <form action="/delete/<%= todo._id %>" method="post">
+              <input type="hidden" name="userId" value="<%= user.id %>">
+              <button class="delete-btn" type="submit">Delete</button>
+            </form>
+          </li>
+        <% }) %>
+      <% } else { %>
+        <li style="text-align:center; color:#120be0;">No todos found</li>
+      <% } %>
+    </ul>
+  </div>
+
+</body>
+</html>

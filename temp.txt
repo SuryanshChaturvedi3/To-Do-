@@ -1,0 +1,15 @@
+<ul>
+  <% if (todos && todos.length > 0) { %>
+    <% todos.forEach(todo => { %>
+      <li>
+        <%= todo.title %>
+        <form action="/delete/<%= todo._id %>" method="post" style="display:inline;">
+          <input type="hidden" name="userId" value="<%= userId %>">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  <% } else { %>
+    <li>No todos found</li>
+  <% } %>
+</ul>
