@@ -2,169 +2,129 @@
 
 A small full stack Task Manager built with React and Express.
 
-The project is split into separate frontend and backend apps. Tasks are stored in memory, so data resets when the backend restarts.
+This repository is split into two apps:
+- `backend/` for the API
+- `frontend/` for the UI
+
+Tasks are stored in an in-memory array on the backend, so all tasks reset when the backend server restarts.
 
 ## Project Structure
 
-- `backend/` contains the Express API.
-- `frontend/` contains the React app.
+```text
+.
+├── backend/
+│   ├── package.json
+│   └── server/
+│       ├── server.js
+│       ├── routes/taskRoutes.js
+│       ├── controllers/taskController.js
+│       └── models/taskModel.js
+├── frontend/
+│   ├── package.json
+│   ├── index.html
+│   ├── vite.config.mjs
+│   └── src/
+│       ├── App.jsx
+│       ├── main.jsx
+│       ├── index.css
+│       ├── components/
+│       │   ├── TaskForm.jsx
+│       │   ├── TaskList.jsx
+│       │   └── TaskItem.jsx
+│       └── services/
+│           └── api.js
+└── package.json
+```
 
 ## Tech Stack
 
-- Frontend: React (hooks, functional components)
+- Frontend: React + Vite
 - Backend: Node.js + Express
-- Storage: In-memory array (no database)
+- Storage: in-memory array (no database)
 
 ## Setup
 
-1. Install backend dependencies:
-
-   ```bash
-   npm install --prefix backend
-   ```
-
-2. Install frontend dependencies:
-
-   ```bash
-   npm install --prefix frontend
-   ```
-
-You can also run both installs from root with:
+1. Install dependencies for both apps:
 
 ```bash
 npm run install:all
 ```
 
-3. Start backend:
+Or install separately:
 
-   ```bash
-   npm start
-   ```
+```bash
+npm install --prefix backend
+npm install --prefix frontend
+```
 
-4. Start frontend in another terminal:
+2. Start backend:
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm start
+```
 
-After starting:
+3. Start frontend in another terminal:
 
+```bash
+npm run dev
+```
+
+Default URLs:
 - Backend: `http://localhost:3001`
-- Frontend: usually `http://localhost:5173` (Vite may choose another port if busy)
+- Frontend: `http://localhost:5173` (or another Vite port if 5173 is busy)
 
-## What Is Actually Happening In This Project
+## What Is Happening In This Project
 
-At runtime, there are two apps running together:
+1. React UI loads and requests `GET /tasks`.
+2. Express returns tasks from in-memory storage.
+3. Adding a task sends `POST /tasks` with `{ "title": "..." }`.
+4. Toggling completion sends `PATCH /tasks/:id`.
+5. Deleting sends `DELETE /tasks/:id`.
+6. Backend returns JSON responses in a consistent shape and updates the in-memory array.
 
-1. The frontend (React + Vite) renders the UI and sends HTTP requests when you add, toggle, or delete tasks.
-2. The backend (Express) receives those requests, updates an in-memory array, and returns JSON.
-
-### Request Flow
-
-1. On page load, React calls `GET /tasks`.
-2. Express returns the current `tasks` array from memory.
-3. When you submit the form, React calls `POST /tasks` with `{ title }`.
-4. Express validates title, creates a task object (`id`, `title`, `completed`, `createdAt`), stores it in memory, and returns it.
-5. When you check/uncheck a task, React calls `PATCH /tasks/:id`.
-6. Express flips `completed` from `true` to `false` (or the reverse) and returns the updated task.
-7. When you delete, React calls `DELETE /tasks/:id`.
-8. Express removes the task from memory and returns a success message.
-
-### Important Behavior
-
-- No database is used.
-- Data is not persisted.
+Important notes:
+- No database or persistence layer.
 - Restarting backend clears all tasks.
-- Validation is basic (`title` is required and cannot be empty after trim).
-- Errors return `success: false` with a message and proper status code.
-
-### Frontend State Behavior
-
-- `loading` is shown while initial tasks are being fetched.
-- `error` is shown if any API call fails.
-- Local task list updates immediately after successful API responses.
+- Backend validates title input (required and non-empty after trim).
 
 ## Response Format
 
-All API endpoints return JSON in this shape:
+Successful response format:
 
 ```json
 {
-  "success": true,
-  "data": {}
+	"success": true,
+	"data": {}
+}
+```
+
+Error response format:
+
+```json
+{
+	"success": false,
+	"error": "Error message"
 }
 ```
 
 ## API Endpoints
 
 ### GET /tasks
-
 Returns all tasks.
 
-Example response:
-
-```json
-{
-  "success": true,
-  "data": []
-}
-```
-
 ### POST /tasks
-
 Creates a task.
 
 Request body:
 
 ```json
 {
-  "title": "Buy milk"
-}
-```
-
-Example response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": "b3f6f8d3-2f2a-4fd1-9ce4-5f4c22d64c79",
-    "title": "Buy milk",
-    "completed": false,
-    "createdAt": "2026-04-09T12:00:00.000Z"
-  }
+	"title": "Buy milk"
 }
 ```
 
 ### PATCH /tasks/:id
-
-Toggles completed status.
-
-Example response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": "b3f6f8d3-2f2a-4fd1-9ce4-5f4c22d64c79",
-    "title": "Buy milk",
-    "completed": true,
-    "createdAt": "2026-04-09T12:00:00.000Z"
-  }
-}
-```
+Toggles `completed` status of a task.
 
 ### DELETE /tasks/:id
-
 Deletes a task.
-
-Example response:
-
-```json
-{
-  "success": true,
-  "data": {
-    "message": "Task deleted successfully."
-  }
-}
-```

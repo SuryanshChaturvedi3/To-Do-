@@ -1,24 +1,14 @@
 {
   "name": "to-do",
   "version": "1.0.0",
-  "description": "",
+  "description": "Task Manager monorepo wrapper for frontend and backend apps",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "start": "npm --prefix backend start",
     "dev": "npm --prefix frontend dev",
     "install:all": "npm install --prefix backend; npm install --prefix frontend",
     "test": "echo \"No tests configured\" && exit 0"
-  },
-  "dependencies": {
-    "express": "^5.1.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^5.0.2",
-    "vite": "^7.1.0"
   }
 }
